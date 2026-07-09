@@ -143,7 +143,15 @@ Le seguenti chiavi vanno inserite in `.env.local` e nel dashboard Supabase/Strip
 | Testare flusso completo | ⏳ **Da fare** | Registrazione → acquisto → email → accesso corso |
 | Integrazione Satispay (opzionale) | ⏳ Rinviato | Seconda fase |
 
-## 10. Polish Completi (Impeccable)
+## 10. USER_STORIES.md generato
+
+| Attività | Stato | Note |
+|----------|-------|------|
+| Reverse engineering codice | ✅ Fatto | Analizzati tutti i file sorgente |
+| `USER_STORIES.md` creato | ✅ Fatto | 12 moduli, 627 linee, ruoli Guest/Utente/Admin |
+| Formato standard user stories | ✅ Fatto | Come/Voglio/Affinché + Given/When/Then |
+
+## 11. Polish Completi (Impeccable)
 
 | Pagina | Modifiche |
 |--------|----------|
