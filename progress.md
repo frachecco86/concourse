@@ -126,22 +126,45 @@ Le seguenti chiavi vanno inserite in `.env.local` e nel dashboard Supabase/Strip
 
 ---
 
-## 9. Prossimi Passi (Post-Deliverable 7)
+## 9. Deploy su Vercel
 
 | Attività | Stato | Note |
 |----------|-------|------|
 | Configurare chiavi Stripe/Resend in `.env.local` | ✅ Fatto | Tutte inserite, manca `STRIPE_WEBHOOK_SECRET` |
-| `vercel.json` | ✅ Fatto | Creato con framework nextjs + pnpm |
-| Deploy su Vercel | ⏳ **Da fare** | Serve prima push su GitHub + collegamento Vercel |
-| Configurare webhook Stripe | ⏳ **Da fare** | Dopo deploy, creare endpoint e ottenere secret |
-| Aggiornare `NEXT_PUBLIC_BASE_URL` | ⏳ **Da fare** | Da cambiare con URL produzione dopo deploy |
+| `vercel.json` | ✅ Fatto | framework nextjs + pnpm |
+| Repo GitHub creato | ✅ Fatto | `github.com/frachecco86/concourse` |
+| Git history sanitizzata | ✅ Fatto | Secrets rimossi da commit history |
+| Deploy su Vercel | ✅ Fatto | `https://concourse-omega.vercel.app` |
+| Env vars su Vercel | ✅ Fatto | Tutte le variabili configurate come project env |
+| `NEXT_PUBLIC_BASE_URL` aggiornata | ✅ Fatto | `https://concourse-omega.vercel.app` |
+| Configurare webhook Stripe | ⏳ **Da fare** | Stripe Dashboard → Webhooks → Add endpoint |
 | Configurare `LLM_API_KEY` | ⏳ **Da fare** | Chiave OpenAI per pipeline AI |
-| Testare flusso completo | ⏳ **Da fare** | Dopo deploy |
+| Configurare `STRIPE_WEBHOOK_SECRET` | ⏳ **Da fare** | Dopo creazione webhook |
+| Testare flusso completo | ⏳ **Da fare** | Registrazione → acquisto → email → accesso corso |
 | Integrazione Satispay (opzionale) | ⏳ Rinviato | Seconda fase |
-| `/impeccable polish` su pagine principali | ✅ Fatto | Landing, player, checkout, auth |
-| `DESIGN.md` generato | ✅ Fatto | `/impeccable document` |
-| Focus ring, skeleton, empty states, transizioni | ✅ Fatto | CSS globali + componenti |
-| Sidecar `.impeccable/design.json` | ✅ Fatto | 10 componenti
+
+## 10. Polish Completi (Impeccable)
+
+| Pagina | Modifiche |
+|--------|----------|
+| `app/globals.css` | Focus ring globale, riduzione movimento, font-family corretto |
+| `app/(pubblico)/page.tsx` | Hero spaziatura, card hover con translate, empty state, footer strutturato, transition-colors |
+| `app/login/page.tsx` | Placeholder input, autoComplete, ruolo alert, separatore accessibile, transition-colors |
+| `app/register/page.tsx` | Placeholder input, autoComplete, ruolo alert, success CTA button, transition-colors |
+| `app/concorsi/[slug]/page.tsx` | Breadcrumb nav semantico, info box con bordi, prezzo display, footer, transition-colors |
+| `app/corsi/[corsoId]/player/page.tsx` | Skeleton loading, empty state, progresso sidebar, useCallback, abort cleanup, prose typography |
+| `app/miei-corsi/page.tsx` | Skeleton loading, empty state con CTA, cleanup cancelled flag, transition-colors |
+| `app/admin/layout.tsx` | Active link detection con usePathname, transition-colors, icone stato attivo |
+
+## 11. URL e Risorse
+
+| Risorsa | URL |
+|---------|-----|
+| GitHub | `https://github.com/frachecco86/concourse` |
+| Vercel (production) | `https://concourse-omega.vercel.app` |
+| Supabase Dashboard | `https://supabase.com/dashboard/project/qpclzfyehhzotqmqqwqe` |
+| Stripe Dashboard | `https://dashboard.stripe.com/test/` |
+| Resend Dashboard | `https://resend.com` |
 
 ## 10. Chiavi Stripe Configurate
 
