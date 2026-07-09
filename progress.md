@@ -128,15 +128,20 @@ Le seguenti chiavi vanno inserite in `.env.local` e nel dashboard Supabase/Strip
 
 ## 9. Prossimi Passi (Post-Deliverable 7)
 
-- ✅ Configurare le chiavi Stripe e Resend in `.env.local`
-- ✅ Fare deploy su Vercel con le variabili d'ambiente
-- ✅ Configurare webhook Stripe (endpoint: `https://.../api/stripe/webhook`)
-- ✅ Testare flusso completo: registrazione → acquisto → email ricevuta → accesso corso
-- ⏳ Valutare integrazione Satispay (opzionale, seconda fase)
-- ✅ `/impeccable polish` sulle pagine principali (landing, player, checkout, auth)
-- ✅ `DESIGN.md` generato con `/impeccable document`
-- ✅ Focus ring globale, skeleton loading, empty states, transizioni CSS
-- ✅ Sidecar `.impeccable/design.json` generato con 10 componenti
+| Attività | Stato | Note |
+|----------|-------|------|
+| Configurare chiavi Stripe/Resend in `.env.local` | ✅ Fatto | Tutte inserite, manca `STRIPE_WEBHOOK_SECRET` |
+| `vercel.json` | ✅ Fatto | Creato con framework nextjs + pnpm |
+| Deploy su Vercel | ⏳ **Da fare** | Serve prima push su GitHub + collegamento Vercel |
+| Configurare webhook Stripe | ⏳ **Da fare** | Dopo deploy, creare endpoint e ottenere secret |
+| Aggiornare `NEXT_PUBLIC_BASE_URL` | ⏳ **Da fare** | Da cambiare con URL produzione dopo deploy |
+| Configurare `LLM_API_KEY` | ⏳ **Da fare** | Chiave OpenAI per pipeline AI |
+| Testare flusso completo | ⏳ **Da fare** | Dopo deploy |
+| Integrazione Satispay (opzionale) | ⏳ Rinviato | Seconda fase |
+| `/impeccable polish` su pagine principali | ✅ Fatto | Landing, player, checkout, auth |
+| `DESIGN.md` generato | ✅ Fatto | `/impeccable document` |
+| Focus ring, skeleton, empty states, transizioni | ✅ Fatto | CSS globali + componenti |
+| Sidecar `.impeccable/design.json` | ✅ Fatto | 10 componenti
 
 ## 10. Chiavi Stripe Configurate
 
@@ -151,6 +156,7 @@ Le seguenti chiavi vanno inserite in `.env.local` e nel dashboard Supabase/Strip
 | `src/lib/email/send.ts` | ✅ Refactoring | Lazy initialization Resend |
 | Build | ✅ Passa | 26 route, TypeScript OK |
 | `RESEND_API_KEY` | ✅ Inserita | Email transazionali attive |
+| Git commit `dd53cdf` | ✅ Fatto | Polish + DESIGN.md + sidecar + lazy init + chiavi |
 
 ## 11. Polish Completi (Impeccable)
 
