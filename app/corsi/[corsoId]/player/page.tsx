@@ -36,9 +36,8 @@ export default function PlayerPage() {
     let cancelled = false;
     async function init() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const uid = user?.id ?? null;
       if (cancelled) return;
-      setUserId(user.id);
 
       const { data: corsoData } = await supabase
         .from("corsi")
@@ -48,6 +47,16 @@ export default function PlayerPage() {
       if (cancelled) return;
       setCorso(corsoData);
 
+      // Se il corso è gratuito (prezzo = 0), permetti accesso senza login
+      const isFree = corsoData && (corsoData.prezzo === 0 || corsoData.prezzo === null);
+
+      if (!uid && !isFree) {
+        // Corso a pagamento: richiede login
+        return;
+      }
+
+      setUserId(uid);
+
       const { data: capData } = await supabase
         .from("capitoli")
         .select("id, titolo, ordine")
@@ -56,24 +65,35 @@ export default function PlayerPage() {
 
       if (!capData || cancelled) { setLoading(false); return; }
 
-      const capIds = capData.map((c: any) => c.id);
-      const { data: progData } = await supabase
-        .from("progressi")
-        .select("capitolo_id, stato")
-        .eq("utente_id", user.id)
-        .in("capitolo_id", capIds);
+      let capitoliConStato: any[];
 
-      const progressMap: Record<string, string> = {};
-      if (progData) {
-        for (const p of progData) {
-          progressMap[p.capitolo_id] = p.stato;
+      if (uid) {
+        // Utente autenticato: carica progresso
+        const capIds = capData.map((c: any) => c.id);
+        const { data: progData } = await supabase
+          .from("progressi")
+          .select("capitolo_id, stato")
+          .eq("utente_id", uid)
+          .in("capitolo_id", capIds);
+
+        const progressMap: Record<string, string> = {};
+        if (progData) {
+          for (const p of progData) {
+            progressMap[p.capitolo_id] = p.stato;
+          }
         }
-      }
 
-      const capitoliConStato = capData.map((c: any) => ({
-        ...c,
-        stato: (progressMap[c.id] ?? "non_iniziato") as "non_iniziato" | "in_corso" | "completato",
-      }));
+        capitoliConStato = capData.map((c: any) => ({
+          ...c,
+          stato: (progressMap[c.id] ?? "non_iniziato") as "non_iniziato" | "in_corso" | "completato",
+        }));
+      } else {
+        // Utente anonimo (corso gratuito): mostra tutto come non_iniziato
+        capitoliConStato = capData.map((c: any) => ({
+          ...c,
+          stato: "non_iniziato" as const,
+        }));
+      }
 
       if (cancelled) return;
       setCapitoli(capitoliConStato);
@@ -84,7 +104,7 @@ export default function PlayerPage() {
 
       if (primoNonCompletato) {
         setCapitoloCorrente(primoNonCompletato);
-        await caricaSlide(primoNonCompletato.id, user.id);
+        await caricaSlide(primoNonCompletato.id, uid);
       }
 
       setLoading(false);
@@ -93,7 +113,7 @@ export default function PlayerPage() {
     return () => { cancelled = true; };
   }, [corsoId]);
 
-  async function caricaSlide(capitoloId: string, uid: string) {
+  async function caricaSlide(capitoloId: string, uid: string | null) {
     const { data: slideData } = await supabase
       .from("slide")
       .select("id, ordine, tipo, contenuto")
@@ -104,29 +124,34 @@ export default function PlayerPage() {
     setSlideIndex(0);
     setSlideCorrente(slideData?.[0] ?? null);
 
-    await supabase.from("progressi").upsert(
-      { utente_id: uid, capitolo_id: capitoloId, stato: "in_corso" },
-      { onConflict: "utente_id" }
-    );
+    // Solo utenti autenticati possono salvare progresso
+    if (uid) {
+      await supabase.from("progressi").upsert(
+        { utente_id: uid, capitolo_id: capitoloId, stato: "in_corso" },
+        { onConflict: "utente_id" }
+      );
+    }
   }
 
   const selezionaCapitolo = useCallback(async (cap: Capitolo) => {
-    if (!userId) return;
     setCapitoloCorrente(cap);
     await caricaSlide(cap.id, userId);
   }, [userId]);
 
   async function completaCapitolo() {
-    if (!userId || !capitoloCorrente) return;
-    await supabase.from("progressi").upsert(
-      {
-        utente_id: userId,
-        capitolo_id: capitoloCorrente.id,
-        stato: "completato",
-        data_completamento: new Date().toISOString(),
-      },
-      { onConflict: "utente_id" }
-    );
+    if (!capitoloCorrente) return;
+
+    if (userId) {
+      await supabase.from("progressi").upsert(
+        {
+          utente_id: userId,
+          capitolo_id: capitoloCorrente.id,
+          stato: "completato",
+          data_completamento: new Date().toISOString(),
+        },
+        { onConflict: "utente_id" }
+      );
+    }
 
     setCapitoli((prev) =>
       prev.map((c) =>
@@ -191,8 +216,27 @@ export default function PlayerPage() {
         <div className="text-center">
           <div className="mb-2 text-3xl">📚</div>
           <p className="text-zinc-400">Corso non trovato.</p>
-          <Link href="/miei-corsi" className="mt-4 inline-block text-sm font-medium text-zinc-900 underline">
-            Torna ai tuoi corsi
+          <Link href="/" className="mt-4 inline-block text-sm font-medium text-zinc-900 underline">
+            Torna alla home
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Corso a pagamento ma utente non autenticato
+  const isFree = corso.prezzo === 0 || corso.prezzo === null;
+  if (!isFree && !userId) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50">
+        <div className="text-center">
+          <div className="mb-2 text-3xl">🔒</div>
+          <p className="text-zinc-500 mb-4">Devi essere autenticato per accedere a questo corso.</p>
+          <Link
+            href="/login"
+            className="inline-block rounded-lg bg-zinc-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+          >
+            Accedi o registrati
           </Link>
         </div>
       </div>

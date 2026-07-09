@@ -198,6 +198,30 @@ Le seguenti chiavi vanno inserite in `.env.local` e nel dashboard Supabase/Strip
 | API `/api/settings/llm/test` | ✅ Fatto | Testa connessione al provider LLM |
 | Sidebar aggiornata | ✅ Fatto | Link "AI — LLM" con icona BrainCircuit |
 
+## 16. Fix Cookie SSR — Server Components
+
+| Attività | Stato | Note |
+|----------|-------|------|
+| `createServerComponentClient()` | ✅ Fatto | Helper async che usa `await cookies()` |
+| `createAdminServerClient()` | ✅ Fatto | Helper async con service key + cookies |
+| Admin dashboard page | ✅ Fatto | Usa `createAdminServerClient()` |
+| Admin vendite page | ✅ Fatto | Usa `createAdminServerClient()` |
+| Admin materiali page | ✅ Fatto | Usa `createAdminServerClient()` |
+| Admin materie page | ✅ Fatto | Server action fixata |
+| Admin concorsi page | ✅ Fatto | Server action fixata |
+| Admin corsi page | ✅ Fatto | Server action fixata |
+| Stripe client | ✅ Fatto | Usa secret key invece di anon key |
+
+## 17. Corsi gratuiti accessibili senza login
+
+| Attività | Stato | Note |
+|----------|-------|------|
+| Player page accetta anonimi | ✅ Fatto | Se corso gratuito, mostra contenuto senza auth |
+| Login prompt per corsi a pagamento | ✅ Fatto | Messaggio "Devi essere autenticato" + link |
+| Progresso salta per anonimi | ✅ Fatto | Non scrive `progressi` per utenti non loggati |
+| Checkout API gestisce prezzo=0 | ✅ Fatto | Salta Stripe, attiva accesso immediato |
+| Badge "Gratuito" su frontend | ✅ Fatto | Pagina concorso + lista corsi |
+
 ## 16. Polish Completi (Impeccable)
 
 | Pagina | Modifiche |

@@ -1,13 +1,8 @@
-import { createServerClient } from "@supabase/ssr";
+import { createAdminServerClient } from "@/lib/supabase/server";
 import Link from "next/link";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
-
 async function getMateriali() {
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: { getAll: () => [], setAll: () => {} },
-  });
+  const supabase = await createAdminServerClient();
 
   const { data } = await supabase
     .from("materiali_origine")

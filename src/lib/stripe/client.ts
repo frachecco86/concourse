@@ -38,8 +38,8 @@ export async function getOrCreateStripeProduct(
 
   const { createServerClient } = await import("@supabase/ssr");
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+  const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const supabase = createServerClient(supabaseUrl, supabaseSecretKey, {
     cookies: { getAll: () => [], setAll: () => {} },
   });
 

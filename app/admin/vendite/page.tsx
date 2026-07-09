@@ -1,12 +1,7 @@
-import { createServerClient } from "@supabase/ssr";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
+import { createAdminServerClient } from "@/lib/supabase/server";
 
 async function getVendite() {
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: { getAll: () => [], setAll: () => {} },
-  });
+  const supabase = await createAdminServerClient();
 
   const { data: acquisti } = await supabase
     .from("acquisti")

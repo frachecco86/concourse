@@ -1,14 +1,9 @@
-import { createServerClient } from "@supabase/ssr";
+import { createAdminServerClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
-
 async function getConcorsi() {
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: { getAll: () => [], setAll: () => {} },
-  });
+  const supabase = await createAdminServerClient();
 
   const { data } = await supabase
     .from("concorsi")
@@ -98,9 +93,8 @@ function DeleteButton({ id }: { id: string }) {
     <form
       action={async () => {
         "use server";
-        const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-          cookies: { getAll: () => [], setAll: () => {} },
-        });
+        const { createAdminServerClient } = await import("@/lib/supabase/server");
+        const supabase = await createAdminServerClient();
         await supabase.from("concorsi").delete().eq("id", id);
         redirect("/admin/concorsi");
       }}
