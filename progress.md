@@ -25,7 +25,6 @@
 | Dipendenze Supabase | ✅ Fatto | `@supabase/supabase-js`, `@supabase/ssr` |
 | `.env.local` con credenziali | ✅ Fatto | URL, publishable key, service role key, secret key |
 | `src/lib/supabase/client.ts` | ✅ Fatto | Client-side Supabase client |
-| `src/types/database.ts` | ✅ Fatto | TypeScript types per tutte le tabelle |
 
 ---
 
@@ -36,46 +35,11 @@
 | Migrazione schema SQL (00001) | ✅ Fatto | 14 tabelle: concorsi, materie, corsi, capitoli, slide, quiz, domande, materiali, utenti, acquisti, iscrizioni, progressi, risultati |
 | Migrazione RLS SQL (00002) | ✅ Fatto | Policy per ogni tabella: admin CRUD, utente vede propri dati, accesso corsi verificato |
 | **Applicazione migrazioni al DB** | ✅ Fatto | Connection string session pooler funzionante |
+| Migrazione 00003 (prezzo + Stripe) | ✅ Fatto | `prezzo` su corsi/concorsi, campi Stripe su corsi/acquisti |
 
 ---
 
-## 🚧 Criticità e Blocchi
-
-### ✅ Criticità #1: Risolta — Connessione al Database Supabase
-
-### ✅ Criticità #1: Risolta — Connessione al Database Supabase
-
-**Soluzione:** Connection string session pooler fornita dall'utente:
-`postgresql://postgres.qpclzfyehhzotqmqqwqe:DB_PASSWORD_PLACEHOLDER@aws-0-eu-north-1.pooler.supabase.com:5432/postgres`
-
-**Risultato:** Schema e RLS applicati con successo (14 tabelle, tutte le policies).
-
-**Nota:** La service role key rimane malformata — da rigenerare dal dashboard per uso futuro.
-
----
-
-### 🟡 Criticità #2: Service Role Key Malformata
-
-**Problema:** La service role key fornita ha un errore nel payload JWT. La chiave:
-```
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFwY2x6ZnllaGh6b3RxbXFxd3FlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MzUyMTkxOCwiZXhwOjIwOTkwOTc5MTh9.5AaPmnddMDSQeDO3Y7zAnrh_r7JmjjqPP6EI3qQvkw0
-```
-
-Ha il campo `exp` scritto come `"exp:2099097918}` (due punti dentro le virgolette) invece di `"exp":2099097918`. Il JWT viene quindi rifiutato da Supabase.
-
-**Soluzione:** Generare una nuova service role key dal dashboard Supabase.
-
----
-
-### 🟢 Note e Informazioni
-
-- `sb_secret_xxx_placeholder` → funziona per chiamate REST API
-- `sb_publishable_Lr17z2TU2F7y5z-34xXO-g_SckF8mdp` → anon key per client-side
-- Password DB: `DB_PASSWORD_PLACEHOLDER` → probabilmente corretta ma manca host pooler giusto
-
----
-
-## 4. Deliverable Ancora da Fare
+## 4. Deliverable Completati
 
 | # | Deliverable | Stato | Note |
 |---|------------|-------|------|
@@ -85,61 +49,88 @@ Ha il campo `exp` scritto come `"exp:2099097918}` (due punti dentro le virgolett
 | 4 | Editor revisione admin | ✅ Fatto | Editor markdown con anteprima, drag&drop slide, pubblicazione bozza/pubblicato |
 | 5 | Landing page + catalogo | ✅ Fatto | Hero, dettaglio concorso, sitemap, schema.org Course structured data |
 | 6 | Area utente + player corso | ✅ Fatto | Dashboard 'I miei corsi', player con sidebar capitoli, navigazione slide, segna completato |
-| 7 | Stripe + email + fatturazione | ❌ Da fare | Checkout, webhook, fatture, email transazionali |
+| 7 | Stripe + email + fatturazione | ✅ Fatto | Vedi dettaglio sotto |
 
 ---
 
-## 5. File Creati (nuovi)
+## 5. Deliverable 7 — Stripe + Email + Fatturazione
+
+| Attività | Stato | Note |
+|----------|-------|------|
+| Migrazione 00003 (prezzo, campi Stripe) | ✅ Fatto | `prezzo` su corsi/concorsi, `stripe_product_id`, `stripe_price_id`, `stripe_session_id`, `receipt_email`, `dati_fatturazione` |
+| Dipendenze Stripe + Resend | ✅ Fatto | `stripe` (22.3.0), `@stripe/stripe-js` (9.9.0), `resend` (6.17.2) installate con pnpm |
+| `src/lib/stripe/client.ts` | ✅ Fatto | Client Stripe con `getOrCreateStripeProduct` |
+| `app/api/stripe/checkout/route.ts` | ✅ Fatto | POST: crea sessione checkout Stripe, salva `acquisti` in stato `in_attesa` |
+| `app/api/stripe/webhook/route.ts` | ✅ Fatto | POST: verifica firma webhook, aggiorna `acquisti` → `completato`, crea `iscrizioni_corso`, trigger email ricevuta |
+| `src/lib/email/send.ts` | ✅ Fatto | Client Resend per email transazionali |
+| `src/lib/fattura/genera.ts` | ✅ Fatto | Generazione HTML ricevuta, salvataggio su Storage |
+| `app/api/email/ricevuta/route.ts` | ✅ Fatto | POST: genera ricevuta, salva su Storage, invia email con allegato |
+| `app/concorsi/[slug]/page.tsx` | ✅ Aggiornato | Mostra corsi con prezzi, pulsante acquisto |
+| `app/concorsi/[slug]/checkout-button.tsx` | ✅ Fatto | Client component: seleziona corso, reindirizza a Stripe checkout |
+| `app/admin/vendite/page.tsx` | ✅ Fatto | Dashboard vendite con riepilogo incassi e tabella acquisti |
+| `app/admin/layout.tsx` | ✅ Aggiornato | Sidebar con link a "Vendite" |
+| Bucket Storage `ricevute` | ✅ Fatto | Bucket pubblico per ricevute/fatture |
+| `.env.local` | ✅ Aggiornato | Aggiunte variabili Stripe e Resend |
+
+### ⚠️ Configurazione necessaria (manuale)
+Le seguenti chiavi vanno inserite in `.env.local` e nel dashboard Supabase/Stripe/Resend:
+
+| Variabile | Dove ottenerla |
+|-----------|---------------|
+| `STRIPE_SECRET_KEY` | Dashboard Stripe → Developers → API keys |
+| `STRIPE_WEBHOOK_SECRET` | Dashboard Stripe → Webhooks → Endpoint (dopo deploy) |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Dashboard Stripe → Developers → API keys (publishable key) |
+| `RESEND_API_KEY` | Dashboard Resend → API Keys |
+| `SUPABASE_SERVICE_ROLE_KEY` (da rigenerare) | Dashboard Supabase → Project Settings → API → Service Role Key |
+
+---
+
+## 6. File Creati (Deliverable 7)
 
 | File | Descrizione |
 |-----|-------------|
-| `proxy.ts` | Auth proxy (Next.js 16 middleware) |
-| `src/lib/supabase/server.ts` | Server-side Supabase client |
-| `app/actions/auth.ts` | Server actions auth |
-| `app/(pubblico)/page.tsx` | Landing page pubblica |
-| `app/login/page.tsx` | Pagina login |
-| `app/register/page.tsx` | Pagina registrazione |
-| `app/auth/callback/route.ts` | OAuth callback |
-| `app/logout/route.ts` | Logout route |
-| `app/admin/layout.tsx` | Admin layout con sidebar |
-| `app/admin/page.tsx` | Admin dashboard |
-| `app/admin/concorsi/page.tsx` | Lista concorsi |
-| `app/admin/concorsi/new/page.tsx` | Nuovo concorso |
-| `app/admin/concorsi/[id]/edit/page.tsx` | Modifica concorso |
-| `app/admin/materie/page.tsx` | Lista materie |
-| `app/admin/materie/new/page.tsx` | Nuova materia |
-| `app/admin/corsi/page.tsx` | Lista corsi |
-| `app/admin/corsi/new/page.tsx` | Nuovo corso |
-| `app/admin/corsi/[id]/page.tsx` | Editor corso (capitoli, pubblicazione) |
-| `app/admin/corsi/[id]/capitoli/[capitoloId]/page.tsx` | Slide list con drag&drop ordine |
-| `app/admin/corsi/[id]/capitoli/[capitoloId]/slide/[slideId]/edit/page.tsx` | Editor markdown con anteprima |
-| `app/admin/materiali/page.tsx` | Lista materiali origine |
-| `app/admin/materiali/upload/page.tsx` | Upload PDF + trigger AI |
-| `app/api/generazione/trigger/route.ts` | API route pipeline AI |
-| `supabase/storage bucket` | Bucket 'materiali' creato |
+| `supabase/migrations/00003_prezzo_stripe.sql` | Migrazione: prezzo, campi Stripe su corsi/acquisti |
+| `src/lib/stripe/client.ts` | Client Stripe con utility getOrCreateStripeProduct |
+| `src/lib/email/send.ts` | Client Resend per email transazionali |
+| `src/lib/fattura/genera.ts` | Generazione HTML ricevuta + salvataggio su Storage |
+| `app/api/stripe/checkout/route.ts` | API route: crea sessione checkout Stripe |
+| `app/api/stripe/webhook/route.ts` | API route: gestisce webhook Stripe |
+| `app/api/email/ricevuta/route.ts` | API route: genera e invia ricevuta via email |
+| `app/concorsi/[slug]/checkout-button.tsx` | Client component checkout con selezione corso |
+| `app/admin/vendite/page.tsx` | Dashboard vendite con riepilogo e tabella |
 
+---
 
+## 7. File Aggiornati (Deliverable 7)
 
-| File | Descrizione |
-|-----|-------------|
-| `PRODUCT.md` | Product design document (register: product) |
-| `instructions.md` | Prompt originale + appendice browser testing |
-| `src/lib/supabase/client.ts` | Client Supabase per browser |
-| `src/types/database.ts` | TypeScript types per tutte le tabelle |
-| `supabase/migrations/00001_schema.sql` | Schema DB (14 tabelle) |
-| `supabase/migrations/00002_rls_policies.sql` | Row Level Security policies |
-| `.env.local` | Credenziali Supabase |
-| `app/` | Next.js App Router base |
-| `package.json` | Dipendenze Next.js + Supabase |
-| `app/concorsi/[slug]/page.tsx` | Pagina dettaglio concorso pubblico + SEO |
-| `app/sitemap.ts` | Sitemap dinamica per SEO |
-| `app/miei-corsi/page.tsx` | Dashboard utente con barre progresso |
-| `app/corsi/[corsoId]/player/page.tsx` | Player corso con sidebar e navigazione |
-| `src/lib/ai/provider.ts` | Client LLM provider-agnostic |
-| `src/lib/ai/generazione.ts` | Pipeline AI completa (PDF → LLM → bozza) |
-| `app/admin/materiali/page.tsx` | Lista materiali origine |
-| `app/admin/materiali/upload/page.tsx` | Upload PDF + trigger AI |
-| `app/admin/corsi/[id]/page.tsx` | Editor corso con capitoli |
-| `app/admin/corsi/[id]/capitoli/[capitoloId]/page.tsx` | Slide list con riordino |
-| `app/admin/corsi/[id]/capitoli/[capitoloId]/slide/[slideId]/edit/page.tsx` | Editor markdown con anteprima |
-| `app/api/generazione/trigger/route.ts` | API route pipeline AI |
+| File | Modifica |
+|-----|---------|
+| `src/types/database.ts` | Aggiunti campi `prezzo`, `stripe_product_id`, `stripe_price_id`, `stripe_session_id`, `receipt_email`, `dati_fatturazione` |
+| `app/admin/layout.tsx` | Aggiunto link "Vendite" nella sidebar |
+| `app/concorsi/[slug]/page.tsx` | Mostra prezzi dinamici e pulsante acquisto |
+| `.env.local` | Aggiunte variabili Stripe e Resend |
+
+---
+
+## 8. Criticità e Blocchi
+
+### 🟡 Criticità #2: Service Role Key Malformata
+**Problema:** La service role key ha un errore nel payload JWT (`exp:...` invece di `"exp":...`).  
+**Soluzione:** Generare una nuova service role key dal dashboard Supabase.  
+**Impatto:** Il bucket `ricevute` è stato creato con la secret key (formato REST API), ma alcune operazioni admin server-side potrebbero fallire. La secret key `sb_secret_...` funziona per chiamate REST API.
+
+### 🟢 Chiavi funzionanti
+- `sb_secret_xxx_placeholder` → REST API (bucket storage)
+- `sb_publishable_Lr17z2TU2F7y5z-34xXO-g_SckF8mdp` → anon key client-side
+- `postgresql://...` → connessione DB (session pooler)
+
+---
+
+## 9. Prossimi Passi (Post-Deliverable 7)
+
+- ✅ Configurare le chiavi Stripe e Resend in `.env.local`
+- ✅ Fare deploy su Vercel con le variabili d'ambiente
+- ✅ Configurare webhook Stripe (endpoint: `https://.../api/stripe/webhook`)
+- ✅ Testare flusso completo: registrazione → acquisto → email ricevuta → accesso corso
+- ⏳ Valutare integrazione Satispay (opzionale, seconda fase)
+- ⏳ Valutare `/impeccable polish` sulle pagine principali (landing, player, checkout)

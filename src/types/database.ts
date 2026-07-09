@@ -41,6 +41,7 @@ export interface ConcorsoRow {
   slug: string;
   cover_image: string | null;
   created_at: string;
+  prezzo: number | null;
 }
 
 export interface MateriaRow {
@@ -61,6 +62,9 @@ export interface CorsoRow {
   titolo: string;
   descrizione: string | null;
   stato: string;
+  prezzo: number | null;
+  stripe_product_id: string | null;
+  stripe_price_id: string | null;
 }
 
 export interface CapitoloRow {
@@ -122,6 +126,9 @@ export interface AcquistoRow {
   provider_payment_id: string | null;
   fattura_url: string | null;
   created_at: string;
+  stripe_session_id: string | null;
+  receipt_email: string | null;
+  dati_fatturazione: Record<string, unknown> | null;
 }
 
 export interface IscrizioneCorsoRow {

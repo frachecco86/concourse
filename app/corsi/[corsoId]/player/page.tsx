@@ -106,7 +106,7 @@ export default function PlayerPage() {
     // Segna capitolo come in_corso
     await supabase.from("progressi").upsert(
       { utente_id: uid, capitolo_id: capitoloId, stato: "in_corso" },
-      { onConflict: ["utente_id", "capitolo_id"] }
+      { onConflict: "utente_id" }
     );
   }
 
@@ -125,7 +125,7 @@ export default function PlayerPage() {
         stato: "completato",
         data_completamento: new Date().toISOString(),
       },
-      { onConflict: ["utente_id", "capitolo_id"] }
+      { onConflict: "utente_id" }
     );
 
     // Aggiorna stato nella lista

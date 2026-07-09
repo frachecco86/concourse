@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogOut, Building, BookOpen, GraduationCap, LayoutDashboard, FileUp } from "lucide-react";
+import { LogOut, Building, BookOpen, GraduationCap, LayoutDashboard, FileUp, ShoppingCart } from "lucide-react";
 
 const sidebarLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -7,6 +7,7 @@ const sidebarLinks = [
   { href: "/admin/materie", label: "Materie", icon: BookOpen },
   { href: "/admin/corsi", label: "Corsi", icon: GraduationCap },
   { href: "/admin/materiali", label: "Materiali", icon: FileUp },
+  { href: "/admin/vendite", label: "Vendite", icon: ShoppingCart },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { CheckoutButton } from "./checkout-button";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
@@ -42,6 +43,21 @@ export default async function ConcorsoDetailPage({
   if (!concorso) notFound();
 
   const materie = concorso.concorsi_materie?.map((cm: any) => cm.materie) ?? [];
+
+  // Recupera i corsi associati a questo concorso (per prezzo)
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: { getAll: () => ({} as any), setAll: () => {} },
+  });
+  const { data: corsiConcorso } = await supabase
+    .from("corsi")
+    .select("id, titolo, prezzo")
+    .eq("concorso_id", concorso.id)
+    .eq("stato", "pubblicato");
+
+  const prezzoMin = corsiConcorso?.reduce(
+    (min, c) => (c.prezzo && c.prezzo < min ? c.prezzo : min),
+    Infinity,
+  ) ?? null;
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -112,13 +128,32 @@ export default async function ConcorsoDetailPage({
               </div>
             )}
 
-            {/* CTA */}
-            <Link
-              href="/register"
-              className="inline-block rounded-lg bg-zinc-900 px-6 py-3 text-sm font-semibold text-white hover:bg-zinc-800"
-            >
-              Acquista il corso — Parti da €39
-            </Link>
+            {/* Corsi associati con prezzi */}
+            {corsiConcorso && corsiConcorso.length > 0 && (
+              <div className="mb-8">
+                <h2 className="mb-3 text-lg font-semibold">Corsi disponibili</h2>
+                <div className="space-y-3">
+                  {corsiConcorso.map((c: any) => (
+                    <div key={c.id} className="flex items-center justify-between rounded-lg border p-4">
+                      <span className="font-medium">{c.titolo}</span>
+                      <span className="text-sm font-semibold">
+                        {c.prezzo ? `€${c.prezzo.toFixed(2)}` : "Prezzo da definire"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Prezzo e CTA acquisto */}
+            {prezzoMin !== null && (
+              <div className="flex items-center justify-between rounded-lg bg-zinc-900 px-6 py-4 text-white">
+                <span className="text-sm">
+                  A partire da <strong>€{prezzoMin.toFixed(2)}</strong> per corso
+                </span>
+                <CheckoutButton concorsoId={concorso.id} corsi={corsiConcorso ?? []} />
+              </div>
+            )}
           </div>
 
           {/* Schema.org structured data */}
