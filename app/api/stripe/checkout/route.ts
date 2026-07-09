@@ -9,7 +9,8 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
  * POST /api/stripe/checkout
  *
  * Crea una sessione di checkout Stripe per l'acquisto di un corso.
- * Body: { corsoId: string, successUrl: string, cancelUrl: string }
+ * Se il corso ha prezzo = 0 o null, lo assegna gratuitamente senza Stripe.
+ * Body: { corsoId: string, successUrl?: string, cancelUrl?: string }
  */
 export async function POST(request: Request) {
   try {
@@ -56,13 +57,33 @@ export async function POST(request: Request) {
       );
     }
 
+    // ─── CORSO GRATUITO ────────────────────────────────────────────
+    // Se il corso ha prezzo = 0 o null, salta Stripe e attiva subito l'accesso
     if (!corso.prezzo || corso.prezzo <= 0) {
-      return NextResponse.json(
-        { error: "Corso senza prezzo" },
-        { status: 400 },
-      );
+      // Crea iscrizione_corso (accesso gratuito)
+      const { data: existing } = await supabase
+        .from("iscrizioni_corso")
+        .select("utente_id")
+        .eq("utente_id", user.id)
+        .eq("corso_id", corsoId)
+        .maybeSingle();
+
+      if (!existing) {
+        await supabase.from("iscrizioni_corso").insert({
+          utente_id: user.id,
+          corso_id: corsoId,
+          data_acquisto: new Date().toISOString(),
+        } as any);
+      }
+
+      return NextResponse.json({
+        free: true,
+        message: "Corso gratuito — accesso attivato",
+        redirectUrl: successUrl || "/miei-corsi",
+      });
     }
 
+    // ─── CORSO A PAGAMENTO ─────────────────────────────────────────
     // Recupera profilo utente per dati fatturazione
     const { data: profilo } = await supabase
       .from("utenti_profili")

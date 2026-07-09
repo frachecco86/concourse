@@ -50,6 +50,12 @@ export function CheckoutButton({
         return;
       }
 
+      // Corso gratuito — reindirizza direttamente ai miei corsi
+      if (data.free) {
+        router.push(data.redirectUrl || "/miei-corsi");
+        return;
+      }
+
       // Reindirizza a Stripe
       if (data.url) {
         window.location.href = data.url;

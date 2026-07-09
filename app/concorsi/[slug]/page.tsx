@@ -139,7 +139,12 @@ export default async function ConcorsoDetailPage({
                     <div key={c.id} className="flex items-center justify-between rounded-lg border border-zinc-100 bg-white p-4 transition-colors hover:border-zinc-200">
                       <span className="font-medium">{c.titolo}</span>
                       <span className="text-sm font-semibold">
-                        {c.prezzo ? `€${c.prezzo.toFixed(2)}` : <span className="text-zinc-400">Prezzo da definire</span>}
+                        {c.prezzo && c.prezzo > 0
+                          ? `€${c.prezzo.toFixed(2)}`
+                          : c.prezzo === 0
+                            ? <span className="inline rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">Gratuito</span>
+                            : <span className="text-zinc-400">Prezzo da definire</span>
+                        }
                       </span>
                     </div>
                   ))}
@@ -151,9 +156,17 @@ export default async function ConcorsoDetailPage({
             {prezzoMin !== null && (
               <div className="flex items-center justify-between rounded-lg bg-zinc-900 px-6 py-4 text-white">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium uppercase tracking-wide text-zinc-400">A partire da</span>
-                  <span className="text-lg font-bold">€{prezzoMin.toFixed(2)}</span>
-                  <span className="text-xs text-zinc-400">per corso</span>
+                  <span className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                    {prezzoMin === 0 ? "Corso gratuito" : "A partire da"}
+                  </span>
+                  {prezzoMin === 0 ? (
+                    <span className="inline rounded-full bg-emerald-600 px-3 py-1 text-sm font-bold text-white">Gratuito</span>
+                  ) : (
+                    <>
+                      <span className="text-lg font-bold">€{prezzoMin.toFixed(2)}</span>
+                      <span className="text-xs text-zinc-400">per corso</span>
+                    </>
+                  )}
                 </div>
                 <CheckoutButton concorsoId={concorso.id} corsi={corsiConcorso ?? []} />
               </div>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, Building, BookOpen, GraduationCap, LayoutDashboard, FileUp, ShoppingCart } from "lucide-react";
+import { LogOut, Building, BookOpen, GraduationCap, LayoutDashboard, FileUp, ShoppingCart, BrainCircuit } from "lucide-react";
 
 const sidebarLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -11,6 +11,7 @@ const sidebarLinks = [
   { href: "/admin/corsi", label: "Corsi", icon: GraduationCap },
   { href: "/admin/materiali", label: "Materiali", icon: FileUp },
   { href: "/admin/vendite", label: "Vendite", icon: ShoppingCart },
+  { href: "/admin/llm", label: "AI — LLM", icon: BrainCircuit },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -173,10 +173,32 @@ Le seguenti chiavi vanno inserite in `.env.local` e nel dashboard Supabase/Strip
 |----------|-------|------|
 | Materia "Diritto Amministrativo" | ✅ Fatto | Con descrizione |
 | Concorso "Comune di Milano" | ✅ Fatto | Stato aperto, 25 posti, slug configurato |
-| Corso "Diritto Amministrativo" | ✅ Fatto | Prezzo €29.90, stato pubblicato |
+| Corso "Diritto Amministrativo" | ✅ Fatto | Ora gratuito (prezzo = 0), stato pubblicato |
 | 5 capitoli | ✅ Fatto | Principi, Atti, Procedimento, Giustizia, Enti Locali |
 | 14 slide totali | ✅ Fatto | Slide + riassunti in markdown |
 | Link concorso-materia | ✅ Fatto | `concorsi_materie` creato |
+| Accesso gratuito | ✅ Fatto | Checkout bypassa Stripe per corsi a prezzo 0 |
+| Badge "Gratuito" su frontend | ✅ Fatto | Mostra Gratuito invece del prezzo |
+
+## 14. Admin Account
+
+| Attività | Stato | Note |
+|----------|-------|------|
+| Account admin creato | ✅ Fatto | `admin@concourse.app` / `Admin123!` |
+| Ruolo admin assegnato | ✅ Fatto | `utenti_profili.ruolo = admin` |
+
+## 15. Gestione LLM in Dashboard
+
+| Attività | Stato | Note |
+|----------|-------|------|
+| Tabella `settings` creata | ✅ Fatto | Con RLS per admin |
+| Migrazione 00004 | ✅ Fatto | `supabase/migrations/00004_settings_llm.sql` |
+| Pagina admin `/admin/llm` | ✅ Fatto | Configura provider, modello, chiave API |
+| API `/api/settings/llm` | ✅ Fatto | GET (legge) + POST (aggiorna) |
+| API `/api/settings/llm/test` | ✅ Fatto | Testa connessione al provider LLM |
+| Sidebar aggiornata | ✅ Fatto | Link "AI — LLM" con icona BrainCircuit |
+
+## 16. Polish Completi (Impeccable)
 
 ## 14. Polish Completi (Impeccable)
 
