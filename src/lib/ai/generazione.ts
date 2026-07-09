@@ -16,7 +16,7 @@ const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY!;
 // Usa secret key per operazioni admin (bypassa RLS)
 function createAdminClient() {
   return createServerClient(supabaseUrl, supabaseSecretKey, {
-    cookies: { getAll: () => ({} as any), setAll: () => {} },
+    cookies: { getAll: () => [], setAll: () => {} },
   });
 }
 

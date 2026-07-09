@@ -1,0 +1,23 @@
+Analizza il codice sorgente di questo progetto per mapparne le funzionalità esistenti. Il tuo obiettivo è fare reverse engineering del software e generare un file completo chiamato 'USER_STORIES.md' nella root del progetto.
+
+Per farlo, segui queste linee guida:
+
+1. MAPPA I RUOLI (MODALITÀ):
+Isola le diverse modalità di accesso analizzando la gestione delle sessioni, delle rotte protette o dei ruoli nel codice (es. Guest/Anonimo, Logged User, Administrator, ecc.).
+
+2. STRUTTURA DELLE STORIE:
+Per ogni funzionalità identificata nei file, scrivi una o più User Stories nel formato standard:
+- **Come** [Ruolo identificato]
+- **Voglio** [Azione/Funzionalità rilevata nel codice]
+- **Affinché** [Il beneficio logico o lo scopo dell'azione]
+
+3. AGGIUNGI I CRITERI DI ACCETTAZIONE (GIVEN-WHEN-THEN):
+Basandoti sulla logica applicativa del codice (gestione errori, redirect, permessi), scrivi i criteri di accettazione per verificare che la storia funzioni come implementata:
+- **Given (Dato che):** lo stato iniziale o il ruolo dell'utente
+- **When (Quando):** l'azione o l'endpoint triggerato
+- **Then (Allora):** la risposta del sistema o il cambio di stato visibile
+
+4. FORMATO DELL'OUTPUT:
+Scrivi direttamente tutto nel file 'USER_STORIES.md'. Organizza il documento in macro-moduli (es. Autenticazione, Dashboard, Gestione Dati) utilizzando titoli in Markdown (##, ###) e liste puntate, senza aggiungere introduzioni o commenti discorsivi esterni al file.
+
+Inizia l'analisi del workspace e crea il file.

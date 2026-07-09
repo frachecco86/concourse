@@ -1,0 +1,6 @@
+Analizza il codice (in particolare le viste, i componenti e i menu di navigazione) e genera un file 'MANUALE_UTENTE.md'.
+
+Dividi il documento in sezioni principali in base ai ruoli dell'app (es. Guida Guest, Guida Utente Loggato, Guida Amministratore). Per ogni ruolo, spiega in modo semplice, non tecnico e testuale:
+1. Come accedere a quella modalità.
+2. Quali pagine o sezioni sono visibili.
+3. Le azioni principali che quel ruolo può compiere (es. "Come aggiungere un elemento", "Come approvare un utente"), descrivendo i passaggi pratici sui pulsanti o menu da cliccare.

@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     // Legge l'utente autenticato dai cookie
     const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
       cookies: {
-        getAll: () => ({} as any),
+        getAll: () => [],
         setAll: () => {},
       },
     });

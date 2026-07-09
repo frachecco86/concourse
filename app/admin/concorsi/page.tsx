@@ -7,7 +7,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
 
 async function getConcorsi() {
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: { getAll: () => ({} as any), setAll: () => {} },
+    cookies: { getAll: () => [], setAll: () => {} },
   });
 
   const { data } = await supabase
@@ -99,7 +99,7 @@ function DeleteButton({ id }: { id: string }) {
       action={async () => {
         "use server";
         const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-          cookies: { getAll: () => ({} as any), setAll: () => {} },
+          cookies: { getAll: () => [], setAll: () => {} },
         });
         await supabase.from("concorsi").delete().eq("id", id);
         redirect("/admin/concorsi");

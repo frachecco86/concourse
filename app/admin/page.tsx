@@ -6,7 +6,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
 
 async function getStats() {
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: { getAll: () => ({} as any), setAll: () => {} },
+    cookies: { getAll: () => [], setAll: () => {} },
   });
 
   const [

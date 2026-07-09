@@ -7,7 +7,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
 
 async function getMaterie() {
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: { getAll: () => ({} as any), setAll: () => {} },
+    cookies: { getAll: () => [], setAll: () => {} },
   });
 
   const { data } = await supabase.from("materie").select("id, nome, descrizione").order("nome");
@@ -69,7 +69,7 @@ function DeleteButton({ id }: { id: string }) {
       action={async () => {
         "use server";
         const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-          cookies: { getAll: () => ({} as any), setAll: () => {} },
+          cookies: { getAll: () => [], setAll: () => {} },
         });
         await supabase.from("materie").delete().eq("id", id);
         redirect("/admin/materie");

@@ -44,7 +44,7 @@ export async function POST(request: Request) {
 
       const { createServerClient } = await import("@supabase/ssr");
       const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-        cookies: { getAll: () => ({} as any), setAll: () => {} },
+        cookies: { getAll: () => [], setAll: () => {} },
       });
 
       // 1. Aggiorna stato acquisto

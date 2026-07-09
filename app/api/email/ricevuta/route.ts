@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     }
 
     const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-      cookies: { getAll: () => ({} as any), setAll: () => {} },
+      cookies: { getAll: () => [], setAll: () => {} },
     });
 
     // Recupera dati

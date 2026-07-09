@@ -151,7 +151,34 @@ Le seguenti chiavi vanno inserite in `.env.local` e nel dashboard Supabase/Strip
 | `USER_STORIES.md` creato | ✅ Fatto | 12 moduli, 627 linee, ruoli Guest/Utente/Admin |
 | Formato standard user stories | ✅ Fatto | Come/Voglio/Affinché + Given/When/Then |
 
-## 11. Polish Completi (Impeccable)
+## 11. MANUALE_UTENTE.md generato
+
+| Attività | Stato | Note |
+|----------|-------|------|
+| Guida Guest | ✅ Fatto | Accesso, navigazione, registrazione |
+| Guida Utente Autenticato | ✅ Fatto | Acquisto, player, progresso |
+| Guida Amministratore | ✅ Fatto | CRUD, pipeline AI, vendite |
+
+## 12. Fix Cookie SSR + Supabase Site URL
+
+| Attività | Stato | Note |
+|----------|-------|------|
+| Fix `getAll: () => ({} as any)` → `[]` | ✅ Fatto | Bug `@supabase/ssr` causava 404 su pagine dinamiche |
+| Aggiornato `site_url` Supabase | ✅ Fatto | `http://localhost:3000` → `https://concourse-omega.vercel.app` |
+| Token Management API salvato | ✅ Fatto | In `API_KEYS.md` (escluso da git) |
+
+## 13. Demo Corso "Diritto Amministrativo"
+
+| Attività | Stato | Note |
+|----------|-------|------|
+| Materia "Diritto Amministrativo" | ✅ Fatto | Con descrizione |
+| Concorso "Comune di Milano" | ✅ Fatto | Stato aperto, 25 posti, slug configurato |
+| Corso "Diritto Amministrativo" | ✅ Fatto | Prezzo €29.90, stato pubblicato |
+| 5 capitoli | ✅ Fatto | Principi, Atti, Procedimento, Giustizia, Enti Locali |
+| 14 slide totali | ✅ Fatto | Slide + riassunti in markdown |
+| Link concorso-materia | ✅ Fatto | `concorsi_materie` creato |
+
+## 14. Polish Completi (Impeccable)
 
 | Pagina | Modifiche |
 |--------|----------|
