@@ -55,16 +55,20 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50">
       <div className="w-full max-w-sm rounded-xl border bg-white p-8 shadow-sm">
-        <h1 className="mb-6 text-2xl font-semibold tracking-tight">Accedi</h1>
+        <div className="mb-2 text-center">
+          <div className="mb-1 text-lg font-bold tracking-tight">ConCourse</div>
+        </div>
+        <h1 className="mb-6 text-xl font-semibold tracking-tight">Accedi</h1>
 
         {magicLinkSent ? (
           <div className="rounded-lg bg-emerald-50 p-4 text-sm text-emerald-800">
-            Controlla la tua email per il link di accesso.
+            <p className="font-medium">Email inviata!</p>
+            <p className="mt-1">Controlla la tua posta per il link di accesso. Se non lo trovi, controlla la cartella spam.</p>
           </div>
         ) : (
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label htmlFor="email" className="mb-1 block text-sm font-medium text-zinc-700">
+              <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-zinc-700">
                 Email
               </label>
               <input
@@ -72,13 +76,15 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-600"
+                className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm outline-none transition-colors focus:border-zinc-900 focus:ring-0"
+                placeholder="nome@email.it"
+                autoComplete="email"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="mb-1 block text-sm font-medium text-zinc-700">
+              <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-zinc-700">
                 Password
               </label>
               <input
@@ -86,22 +92,27 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-600"
+                className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm outline-none transition-colors focus:border-zinc-900 focus:ring-0"
+                autoComplete="current-password"
                 required
               />
             </div>
 
-            {error && <p className="text-sm text-red-600">{error}</p>}
+            {error && (
+              <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">
+                {error}
+              </div>
+            )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
+              className="w-full rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:opacity-50"
             >
               {loading ? "Accesso in corso..." : "Accedi"}
             </button>
 
-            <div className="relative my-4">
+            <div className="relative my-4" role="separator" aria-label="oppure">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-zinc-200" />
               </div>
@@ -114,14 +125,14 @@ export default function LoginPage() {
               type="button"
               onClick={handleMagicLink}
               disabled={loading}
-              className="w-full rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
+              className="w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-50"
             >
               Invia magic link
             </button>
 
             <p className="text-center text-xs text-zinc-500">
               Non hai un account?{" "}
-              <a href="/register" className="font-medium text-zinc-900 underline">
+              <a href="/register" className="font-medium text-zinc-900 underline hover:text-zinc-700 transition-colors">
                 Registrati
               </a>
             </p>

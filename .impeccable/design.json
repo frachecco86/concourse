@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-09T16:42:00.000Z",
+  "title": "Design System: ConCourse",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Deep Ink",
+        "canonical": "oklch(0.12 0 0)",
+        "tonalRamp": [
+          "oklch(0.15 0 0)",
+          "oklch(0.20 0 0)",
+          "oklch(0.28 0 0)",
+          "oklch(0.37 0 0)",
+          "oklch(0.46 0 0)",
+          "oklch(0.55 0 0)",
+          "oklch(0.65 0 0)",
+          "oklch(0.80 0 0)"
+        ]
+      },
+      "neutral-bg": {
+        "role": "neutral",
+        "displayName": "Studio",
+        "canonical": "oklch(0.97 0.005 85)",
+        "tonalRamp": [
+          "oklch(0.15 0 0)",
+          "oklch(0.30 0 0)",
+          "oklch(0.45 0.005 85)",
+          "oklch(0.55 0.005 85)",
+          "oklch(0.65 0.005 85)",
+          "oklch(0.75 0.005 85)",
+          "oklch(0.85 0.005 85)",
+          "oklch(0.97 0.005 85)"
+        ]
+      },
+      "neutral-surface": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": [
+          "oklch(0.90 0 0)",
+          "oklch(0.95 0 0)",
+          "oklch(1 0 0)"
+        ]
+      },
+      "success": {
+        "role": "tertiary",
+        "displayName": "Success Emerald",
+        "canonical": "oklch(0.58 0.12 160)",
+        "tonalRamp": [
+          "oklch(0.25 0.12 160)",
+          "oklch(0.35 0.12 160)",
+          "oklch(0.45 0.12 160)",
+          "oklch(0.58 0.12 160)",
+          "oklch(0.70 0.10 160)",
+          "oklch(0.80 0.08 160)",
+          "oklch(0.90 0.05 160)",
+          "oklch(0.97 0.03 160)"
+        ]
+      },
+      "info": {
+        "role": "tertiary",
+        "displayName": "Info Blue",
+        "canonical": "oklch(0.45 0.15 260)",
+        "tonalRamp": [
+          "oklch(0.20 0.15 260)",
+          "oklch(0.30 0.15 260)",
+          "oklch(0.45 0.15 260)",
+          "oklch(0.55 0.13 260)",
+          "oklch(0.65 0.10 260)",
+          "oklch(0.75 0.08 260)",
+          "oklch(0.88 0.05 260)",
+          "oklch(0.96 0.03 260)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Titoli di pagina hero e dettaglio concorso. text-wrap: balance."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Titoli di sezione, dashboard card title, sidebar admin."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Titoli di card corso, nomi concorso in tabelle, link navigazione."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Testo descrittivo, contenuto slide, paragrafi. 65–75ch per prosa."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Etichette di campo, intestazioni tabella, badge, metadati. Uppercase con tracking."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ambient-low",
+        "value": "0 1px 2px rgba(0,0,0,0.05)",
+        "purpose": "Card e tabelle a riposo. Leggerissimo, appena percettibile."
+      },
+      {
+        "name": "hover-raised",
+        "value": "0 4px 6px -1px rgba(0,0,0,0.1)",
+        "purpose": "Hover su card cliccabili. Unica ombra come risposta a stato."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Easing standard per transizioni di stato (150-250ms)."
+      },
+      {
+        "name": "ease-progress",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Easing per barra di progresso (500ms)."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Azione primaria in tutta la piattaforma. Sfondo nero, testo bianco, 8px radius.",
+      "html": "<button class=\"ds-btn-primary\">Registrati</button>",
+      "css": ".ds-btn-primary { background: #171717; color: #fff; padding: 8px 16px; border-radius: 8px; font-family: Geist, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; border: none; cursor: pointer; transition: background 0.15s cubic-bezier(0.4,0,0.2,1); } .ds-btn-primary:hover { background: #1a1a1a; } .ds-btn-primary:focus-visible { outline: 2px solid #171717; outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.5; cursor: default; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Azione secondaria. Bordo grigio, hover sfondo chiaro.",
+      "html": "<button class=\"ds-btn-ghost\">Annulla</button>",
+      "css": ".ds-btn-ghost { background: #fff; color: #171717; padding: 8px 16px; border-radius: 8px; border: 1px solid #e4e4e7; font-family: Geist, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.15s cubic-bezier(0.4,0,0.2,1); } .ds-btn-ghost:hover { background: #f4f4f5; } .ds-btn-ghost:focus-visible { outline: 2px solid #171717; outline-offset: 2px; } .ds-btn-ghost:disabled { opacity: 0.5; cursor: default; }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Campo di input standard. Bordo grigio, focus nero.",
+      "html": "<input class=\"ds-input\" placeholder=\"nome@email.it\" />",
+      "css": ".ds-input { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #e4e4e7; background: #fff; font-family: Geist, system-ui, sans-serif; font-size: 0.875rem; color: #171717; outline: none; transition: border-color 0.15s cubic-bezier(0.4,0,0.2,1); } .ds-input:focus { border-color: #171717; } .ds-input:focus-visible { outline: 2px solid #171717; outline-offset: 2px; } .ds-input:disabled { background: #f4f4f5; color: #a1a1aa; } .ds-input::placeholder { color: #a1a1aa; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Contenitore base. Sfondo bianco su studio, 12px radius, shadow-sm.",
+      "html": "<div class=\"ds-card\"><p>Contenuto della card</p></div>",
+      "css": ".ds-card { background: #fff; border-radius: 12px; border: 1px solid #e4e4e7; padding: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }"
+    },
+    {
+      "name": "Clickable Card",
+      "kind": "card",
+      "refersTo": "card-hover",
+      "description": "Card navigabile. Hover alza shadow e trasla leggermente.",
+      "html": "<a class=\"ds-card-clickable\" href=\"#\"><h3>Titolo corso</h3></a>",
+      "css": ".ds-card-clickable { display: block; background: #fff; border-radius: 12px; border: 1px solid #e4e4e7; padding: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer; transition: box-shadow 0.15s cubic-bezier(0.4,0,0.2,1), transform 0.15s cubic-bezier(0.4,0,0.2,1); text-decoration: none; color: inherit; } .ds-card-clickable:hover { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transform: translateY(-2px); }"
+    },
+    {
+      "name": "Status Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Badge di stato. Pill con sfondo semantico.",
+      "html": "<span class=\"ds-chip ds-chip-success\">Completato</span>",
+      "css": ".ds-chip { display: inline-block; padding: 4px 12px; border-radius: 9999px; font-family: Geist, system-ui, sans-serif; font-size: 0.75rem; font-weight: 500; } .ds-chip-success { background: #ecfdf5; color: #059669; } .ds-chip-info { background: #eff6ff; color: #2563eb; } .ds-chip-warning { background: #fffbeb; color: #d97706; } .ds-chip-danger { background: #fef2f2; color: #dc2626; } .ds-chip-neutral { background: #f4f4f5; color: #52525b; }"
+    },
+    {
+      "name": "Progress Bar",
+      "kind": "custom",
+      "refersTo": "progress",
+      "description": "Barra di progresso. Sfondo zinc-100, fill emerald-500.",
+      "html": "<div class=\"ds-progress-track\"><div class=\"ds-progress-fill\" style=\"width:60%\"></div></div>",
+      "css": ".ds-progress-track { height: 8px; border-radius: 9999px; background: #e4e4e7; overflow: hidden; } .ds-progress-fill { height: 100%; border-radius: 9999px; background: #059669; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }"
+    },
+    {
+      "name": "Admin Sidebar Link",
+      "kind": "nav",
+      "refersTo": "nav-sidebar",
+      "description": "Link di navigazione admin. Hover bg chiaro, attivo bg nero.",
+      "html": "<nav><a class=\"ds-nav-link ds-nav-active\" href=\"#\">Dashboard</a><a class=\"ds-nav-link\" href=\"#\">Concorsi</a></nav>",
+      "css": ".ds-nav-link { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 8px; font-family: Geist, system-ui, sans-serif; font-size: 0.875rem; color: #52525b; text-decoration: none; transition: background 0.15s cubic-bezier(0.4,0,0.2,1), color 0.15s cubic-bezier(0.4,0,0.2,1); } .ds-nav-link:hover { background: #f4f4f5; color: #171717; } .ds-nav-active { background: #171717; color: #fff; } .ds-nav-active:hover { background: #1a1a1a; }"
+    },
+    {
+      "name": "Table",
+      "kind": "custom",
+      "refersTo": "table",
+      "description": "Tabella standard admin. Bordo, shadow-sm, hover riga.",
+      "html": "<table class=\"ds-table\"><thead><tr><th>Nome</th><th>Stato</th></tr></thead><tbody><tr><td>Concorso A</td><td><span class=\"ds-chip ds-chip-success\">Aperto</span></td></tr></tbody></table>",
+      "css": ".ds-table { width: 100%; border-collapse: collapse; border: 1px solid #e4e4e7; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05); background: #fff; font-family: Geist, system-ui, sans-serif; font-size: 0.875rem; } .ds-table th { padding: 12px 16px; text-align: left; font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: #a1a1aa; background: #fafafa; border-bottom: 1px solid #e4e4e7; } .ds-table td { padding: 12px 16px; border-bottom: 1px solid #e4e4e7; } .ds-table tr:last-child td { border-bottom: none; } .ds-table tbody tr:hover { background: #f4f4f5; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Studio Cattedra",
+    "overview": "Una piattaforma che sembra un'aula di studio ben organizzata — non un portale burocratico, non una app gamificata. Ogni schermo è costruito attorno al contenuto: la navigazione è strumento, non protagonista. La palette è trattenuta (neutri caldi con un accento singolo — il nero profondo dei titoli e dei CTA primari). Il bianco e lo zinco creano strati sottili senza ombre invasive. I tocchi di colore (verde per completato, blu per materie, ambra per avvisi) sono semantici, non decorativi.",
+    "keyCharacteristics": [
+      "Calma visiva — molto spazio bianco, gerarchia chiara, niente elementi che competono per attenzione",
+      "Mobile-first — ogni pagina funziona su schermo piccolo, la densità aumenta su desktop",
+      "Semantica coi colori — ogni colore ha un significato (verde=completato, blu=materia, ambra=attenzione, rosso=errore)",
+      "Contenuto al centro — player, slide, quiz: tutto è costruito attorno al materiale di studio",
+      "Admin tool-like — dashboard, tabelle, CRUD con vocabolario coerente: stessi bottoni, stesse form, stessi tag"
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "Il nero profondo (#171717) è usato su ≤10% di ogni schermo. Bottoni primari, titoli, CTA. La sua rarità è il punto.", "section": "colors" },
+      { "name": "The Semantic Color Rule", "body": "I colori (verde, blu, ambra, rosso) appaiono SOLO come badge, sfondo badge, barra di progresso, o testo di stato. Mai come decorazione, mai come colore primario di un componente.", "section": "colors" },
+      { "name": "The One Family Rule", "body": "Geist per tutto. Nessuna eccezione per display/body pairing su pagine pubbliche. Un font, ben pesato, basta.", "section": "typography" },
+      { "name": "The No Eyebrow Rule", "body": "Mai usare testo uppercase con tracking largo come 'kicker' decorativo sopra le sezioni. Le label uppercase esistono solo per intestazioni di tabella, label di form, e badge — mai come decorazione di sezione.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Le superfici sono piatte a riposo. Le ombre appaiono solo come risposta a stato (hover su card). Per stratificazione, usa sfondi diversi (bianco su zinc-50) prima di ricorrere a ombre.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do usare la stratificazione di sfondi (bianco su zinc-50) per profondità, non ombre.",
+      "Do riservare i colori semantici (verde, blu, ambra, rosso) esclusivamente per stati, badge, e indicatori.",
+      "Do mantenere i bottoni primari in nero profondo su tutta la piattaforma — stesso componente, stesso colore, stesso comportamento.",
+      "Do usare shadow-sm per card a riposo e shadow-md solo per hover su card cliccabili.",
+      "Do testare ogni pagina a 320px viewport — molte card e tabelle devono funzionare su mobile.",
+      "Do supportare prefers-reduced-motion disattivando ogni transizione/animazione non essenziale."
+    ],
+    "donts": [
+      "Don't usare clutter, sidebar affollate, elementi superflui. Il contenuto è al centro.",
+      "Don't usare gamification aggressiva — niente badge vistosi, leaderboard, o elementi gioco.",
+      "Don't usare stile PA italiana classica — niente tritonali, stemmi, burocrazia visiva.",
+      "Don't usare gradienti decorativi (background-clip: text con gradient, sfondi gradienti su card).",
+      "Don't usare glassmorphism (blur e vetro) come default decorativo.",
+      "Don't usare bordo sinistro colorato maggiore di 1px come accento su card, list item, o callout.",
+      "Don't usare il pattern 'eyebrow' (testo uppercase con tracking sopra ogni sezione).",
+      "Don't usare border-radius maggiore di 12px su card, sezioni, input — 24px+ è over-rounding.",
+      "Don't usare ombra e bordo insieme sullo stesso elemento — scegli uno solo.",
+      "Don't nidificare card — una card non deve mai contenere un'altra card.",
+      "Don't pubblicare automaticamente contenuti AI in produzione — tutto passa per revisione admin."
+    ]
+  }
+}

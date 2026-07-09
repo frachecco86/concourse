@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -33,29 +33,29 @@ export default function PlayerPage() {
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     async function init() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      if (cancelled) return;
       setUserId(user.id);
 
-      // Carica corso
       const { data: corsoData } = await supabase
         .from("corsi")
         .select("*")
         .eq("id", corsoId)
         .single();
+      if (cancelled) return;
       setCorso(corsoData);
 
-      // Carica capitoli con progresso
       const { data: capData } = await supabase
         .from("capitoli")
         .select("id, titolo, ordine")
         .eq("corso_id", corsoId)
         .order("ordine", { ascending: true });
 
-      if (!capData) { setLoading(false); return; }
+      if (!capData || cancelled) { setLoading(false); return; }
 
-      // Leggi progressi
       const capIds = capData.map((c: any) => c.id);
       const { data: progData } = await supabase
         .from("progressi")
@@ -75,9 +75,9 @@ export default function PlayerPage() {
         stato: (progressMap[c.id] ?? "non_iniziato") as "non_iniziato" | "in_corso" | "completato",
       }));
 
+      if (cancelled) return;
       setCapitoli(capitoliConStato);
 
-      // Seleziona primo capitolo non completato o il primo
       const primoNonCompletato = capitoliConStato.find(
         (c) => c.stato !== "completato"
       ) ?? capitoliConStato[0];
@@ -90,6 +90,7 @@ export default function PlayerPage() {
       setLoading(false);
     }
     init();
+    return () => { cancelled = true; };
   }, [corsoId]);
 
   async function caricaSlide(capitoloId: string, uid: string) {
@@ -103,18 +104,17 @@ export default function PlayerPage() {
     setSlideIndex(0);
     setSlideCorrente(slideData?.[0] ?? null);
 
-    // Segna capitolo come in_corso
     await supabase.from("progressi").upsert(
       { utente_id: uid, capitolo_id: capitoloId, stato: "in_corso" },
       { onConflict: "utente_id" }
     );
   }
 
-  async function selezionaCapitolo(cap: Capitolo) {
+  const selezionaCapitolo = useCallback(async (cap: Capitolo) => {
     if (!userId) return;
     setCapitoloCorrente(cap);
     await caricaSlide(cap.id, userId);
-  }
+  }, [userId]);
 
   async function completaCapitolo() {
     if (!userId || !capitoloCorrente) return;
@@ -128,14 +128,12 @@ export default function PlayerPage() {
       { onConflict: "utente_id" }
     );
 
-    // Aggiorna stato nella lista
     setCapitoli((prev) =>
       prev.map((c) =>
         c.id === capitoloCorrente.id ? { ...c, stato: "completato" } : c
       )
     );
 
-    // Passa al prossimo capitolo
     const prossimoIdx = capitoli.findIndex(
       (c) => c.id === capitoloCorrente.id
     ) + 1;
@@ -161,9 +159,9 @@ export default function PlayerPage() {
   /** Render markdown → HTML semplice */
   function renderMarkdown(md: string): string {
     let html = md
-      .replace(/^### (.+)$/gm, "<h3>$1</h3>")
-      .replace(/^## (.+)$/gm, "<h2>$1</h2>")
-      .replace(/^# (.+)$/gm, "<h1>$1</h1>")
+      .replace(/^### (.+)$/gm, "<h3 id=\"slide-h3\">$1</h3>")
+      .replace(/^## (.+)$/gm, "<h2 id=\"slide-h2\">$1</h2>")
+      .replace(/^# (.+)$/gm, "<h1 id=\"slide-h1\">$1</h1>")
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
       .replace(/__(.+?)__/g, "<em>$1</em>")
       .replace(/^- (.+)$/gm, "<li>$1</li>")
@@ -172,15 +170,33 @@ export default function PlayerPage() {
       .replace(/```(\w*)\n([\s\S]*?)```/gm, '<pre><code class="language-$1">$2</code></pre>')
       .replace(/\n\n/g, "</p><p>")
       .replace(/\n/g, "<br/>");
-    return `<div class="prose max-w-none leading-relaxed"><p>${html}</p></div>`;
+    return `<div class="prose max-w-none"><p>${html}</p></div>`;
   }
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center text-zinc-400">Caricamento...</div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-6 w-48 animate-pulse rounded bg-zinc-200" />
+          <div className="h-4 w-32 animate-pulse rounded bg-zinc-200" />
+          <span className="text-sm text-zinc-400">Caricamento corso...</span>
+        </div>
+      </div>
+    );
   }
 
   if (!corso) {
-    return <div className="flex min-h-screen items-center justify-center text-zinc-400">Corso non trovato.</div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50">
+        <div className="text-center">
+          <div className="mb-2 text-3xl">📚</div>
+          <p className="text-zinc-400">Corso non trovato.</p>
+          <Link href="/miei-corsi" className="mt-4 inline-block text-sm font-medium text-zinc-900 underline">
+            Torna ai tuoi corsi
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -188,45 +204,63 @@ export default function PlayerPage() {
       {/* Sidebar capitoli */}
       <aside className="flex w-72 flex-col border-r bg-white">
         <div className="border-b px-5 py-4">
-          <Link href="/miei-corsi" className="text-sm text-zinc-500 hover:text-zinc-900 underline">
+          <Link href="/miei-corsi" className="text-sm text-zinc-500 transition-colors hover:text-zinc-900 underline">
             ← I miei corsi
           </Link>
-          <h2 className="mt-1 text-sm font-semibold">{corso.titolo}</h2>
+          <h2 className="mt-1 text-sm font-semibold">{corso?.titolo}</h2>
         </div>
 
-        <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-          {capitoli.map((cap) => (
-            <button
-              key={cap.id}
-              onClick={() => selezionaCapitolo(cap)}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm ${
-                cap.id === capitoloCorrente?.id
-                  ? "bg-zinc-900 text-white"
-                  : cap.stato === "completato"
-                    ? "bg-emerald-50 text-emerald-800"
-                    : "text-zinc-600 hover:bg-zinc-100"
-              }`}
-            >
-              <span className="text-xs font-mono">
-                {cap.stato === "completato" ? "✅" : cap.id === capitoloCorrente?.id ? "▶" : `${cap.ordine}.`}
-              </span>
-              {cap.titolo}
-            </button>
-          ))}
+        {/* Progresso complessivo */}
+        {capitoli.length > 0 && (
+          <div className="border-b px-5 py-3">
+            <div className="mb-1 flex items-center justify-between text-xs text-zinc-500">
+              <span>Progresso</span>
+              <span>{capitoli.filter(c => c.stato === "completato").length}/{capitoli.length}</span>
+            </div>
+            <div className="h-1.5 overflow-hidden rounded-full bg-zinc-100">
+              <div
+                className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                style={{ width: `${(capitoli.filter(c => c.stato === "completato").length / capitoli.length) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        <nav className="flex-1 space-y-1 overflow-y-auto p-3" role="navigation" aria-label="Capitoli del corso">
+          {capitoli.length === 0 ? (
+            <p className="px-3 py-2 text-xs text-zinc-400">Nessun capitolo disponibile.</p>
+          ) : (
+            capitoli.map((cap) => (
+              <button
+                key={cap.id}
+                onClick={() => selezionaCapitolo(cap)}
+                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                  cap.id === capitoloCorrente?.id
+                    ? "bg-zinc-900 text-white"
+                    : cap.stato === "completato"
+                      ? "bg-emerald-50 text-emerald-800"
+                      : "text-zinc-600 hover:bg-zinc-100"
+                }`}
+              >
+                <span className="text-xs font-mono" aria-hidden="true">
+                  {cap.stato === "completato" ? "✅" : cap.id === capitoloCorrente?.id ? "▶" : `${cap.ordine}.`}
+                </span>
+                {cap.titolo}
+              </button>
+            ))
+          )}
         </nav>
       </aside>
 
       {/* Area contenuto */}
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-6 py-12">
-          {/* Titolo capitolo */}
-          <h1 className="mb-2 text-2xl font-semibold tracking-tight">
+          <h1 className="mb-2 text-2xl font-semibold tracking-tight text-wrap:balance">
             {capitoloCorrente?.titolo ?? "Seleziona un capitolo"}
           </h1>
 
           {slideCorrente ? (
             <>
-              {/* Indicatore tipo */}
               <div className="mb-4 flex items-center gap-2">
                 <span
                   className={`inline rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -242,18 +276,16 @@ export default function PlayerPage() {
                 </span>
               </div>
 
-              {/* Contenuto */}
               <div
-                className="rounded-xl border bg-white p-8 shadow-sm"
+                className="prose prose-zinc max-w-none rounded-xl border bg-white p-8 shadow-sm"
                 dangerouslySetInnerHTML={{ __html: renderMarkdown(slideCorrente.contenuto) }}
               />
 
-              {/* Navigazione slide */}
               <div className="mt-6 flex items-center justify-between">
                 <button
                   onClick={slidePrecedente}
                   disabled={slideIndex === 0}
-                  className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-30"
+                  className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-30"
                 >
                   ← Precedente
                 </button>
@@ -263,26 +295,28 @@ export default function PlayerPage() {
                 <button
                   onClick={slideSuccessiva}
                   disabled={slideIndex === slide.length - 1}
-                  className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-30"
+                  className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-30"
                 >
                   Successiva →
                 </button>
               </div>
 
-              {/* Completa capitolo (mostrato solo all'ultima slide) */}
               {slideIndex === slide.length - 1 && (
                 <div className="mt-8 text-center">
                   <button
                     onClick={completaCapitolo}
-                    className="rounded-lg bg-emerald-600 px-6 py-3 text-sm font-medium text-white hover:bg-emerald-500"
+                    className="rounded-lg bg-emerald-600 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-emerald-500"
                   >
-                    ✅ Segna capitolo come completato
+                    Segna capitolo come completato
                   </button>
                 </div>
               )}
             </>
           ) : (
-            <p className="text-zinc-400">Nessuna slide in questo capitolo.</p>
+            <div className="rounded-xl border bg-white p-12 text-center shadow-sm">
+              <div className="mb-2 text-3xl">📖</div>
+              <p className="text-zinc-400">Nessuna slide in questo capitolo.</p>
+            </div>
           )}
         </div>
       </main>

@@ -133,4 +133,34 @@ Le seguenti chiavi vanno inserite in `.env.local` e nel dashboard Supabase/Strip
 - ✅ Configurare webhook Stripe (endpoint: `https://.../api/stripe/webhook`)
 - ✅ Testare flusso completo: registrazione → acquisto → email ricevuta → accesso corso
 - ⏳ Valutare integrazione Satispay (opzionale, seconda fase)
-- ⏳ Valutare `/impeccable polish` sulle pagine principali (landing, player, checkout)
+- ✅ `/impeccable polish` sulle pagine principali (landing, player, checkout, auth)
+- ✅ `DESIGN.md` generato con `/impeccable document`
+- ✅ Focus ring globale, skeleton loading, empty states, transizioni CSS
+- ✅ Sidecar `.impeccable/design.json` generato con 10 componenti
+
+## 10. Chiavi Stripe Configurate
+
+| Variabile | Stato | Note |
+|-----------|-------|------|
+| `STRIPE_SECRET_KEY` | ✅ Inserita | `sk_test_...` (test mode) |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | ✅ Inserita | `pk_test_...` (test mode) |
+| `STRIPE_WEBHOOK_SECRET` | ⏳ Manca | Da generare dopo deploy webhook |
+| `API_KEYS.md` | ✅ Creato | Escluso da git, contiene tutte le chiavi |
+| `src/lib/stripe/client.ts` | ✅ Refactoring | Lazy initialization per evitare crash a build time |
+| `app/api/stripe/*/route.ts` | ✅ Aggiornato | Usano `getStripe()` lazy |
+| `src/lib/email/send.ts` | ✅ Refactoring | Lazy initialization Resend |
+| Build | ✅ Passa | 26 route, TypeScript OK |
+| `RESEND_API_KEY` | ✅ Inserita | Email transazionali attive |
+
+## 11. Polish Completi (Impeccable)
+
+| Pagina | Modifiche |
+|--------|----------|
+| `app/globals.css` | Focus ring globale, riduzione movimento, font-family corretto |
+| `app/(pubblico)/page.tsx` | Hero spaziatura, card hover con translate, empty state, footer strutturato, transition-colors |
+| `app/login/page.tsx` | Placeholder input, autoComplete, ruolo alert, separatore accessibile, transition-colors |
+| `app/register/page.tsx` | Placeholder input, autoComplete, ruolo alert, success CTA button, transition-colors |
+| `app/concorsi/[slug]/page.tsx` | Breadcrumb nav semantico, info box con bordi, prezzo display, footer, transition-colors |
+| `app/corsi/[corsoId]/player/page.tsx` | Skeleton loading, empty state, progresso sidebar, useCallback, abort cleanup, prose typography |
+| `app/miei-corsi/page.tsx` | Skeleton loading, empty state con CTA, cleanup cancelled flag, transition-colors |
+| `app/admin/layout.tsx` | Active link detection con usePathname, transition-colors, icone stato attivo |

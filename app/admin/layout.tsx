@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { LogOut, Building, BookOpen, GraduationCap, LayoutDashboard, FileUp, ShoppingCart } from "lucide-react";
 
 const sidebarLinks = [
@@ -11,9 +14,10 @@ const sidebarLinks = [
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
   return (
     <div className="flex min-h-screen bg-zinc-50">
-      {/* Sidebar */}
       <aside className="flex w-60 flex-col border-r bg-white">
         <div className="flex items-center gap-2 border-b px-5 py-4">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-xs font-bold text-white">
@@ -23,30 +27,37 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <nav className="flex-1 space-y-1 p-3">
-          {sidebarLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
-            >
-              <link.icon className="h-4 w-4" />
-              {link.label}
-            </Link>
-          ))}
+          {sidebarLinks.map((link) => {
+            const isActive = pathname === link.href ||
+              (link.href !== "/admin" && pathname.startsWith(link.href + "/"));
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                  isActive
+                    ? "bg-zinc-900 text-white"
+                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                }`}
+              >
+                <link.icon className={`h-4 w-4 ${isActive ? "text-white" : "text-zinc-500"}`} />
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="border-t p-3">
           <Link
             href="/logout"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-500 hover:bg-red-50 hover:text-red-600"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-500 transition-colors hover:bg-red-50 hover:text-red-600"
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="h-4 w-4 text-zinc-400" />
             Esci
           </Link>
         </div>
       </aside>
 
-      {/* Main content */}
       <main className="flex-1 overflow-y-auto p-6">{children}</main>
     </div>
   );

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe/client";
+import { getStripe } from "@/lib/stripe/client";
 import { createServerClient } from "@supabase/ssr";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -71,6 +71,7 @@ export async function POST(request: Request) {
       .single();
 
     // Crea sessione di checkout Stripe
+    const stripe = await getStripe();
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items: [
