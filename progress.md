@@ -200,8 +200,6 @@ Le seguenti chiavi vanno inserite in `.env.local` e nel dashboard Supabase/Strip
 
 ## 16. Polish Completi (Impeccable)
 
-## 14. Polish Completi (Impeccable)
-
 | Pagina | Modifiche |
 |--------|----------|
 | `app/globals.css` | Focus ring globale, riduzione movimento, font-family corretto |
@@ -213,7 +211,7 @@ Le seguenti chiavi vanno inserite in `.env.local` e nel dashboard Supabase/Strip
 | `app/miei-corsi/page.tsx` | Skeleton loading, empty state con CTA, cleanup cancelled flag, transition-colors |
 | `app/admin/layout.tsx` | Active link detection con usePathname, transition-colors, icone stato attivo |
 
-## 11. URL e Risorse
+## 17. URL e Risorse
 
 | Risorsa | URL |
 |---------|-----|
@@ -223,7 +221,7 @@ Le seguenti chiavi vanno inserite in `.env.local` e nel dashboard Supabase/Strip
 | Stripe Dashboard | `https://dashboard.stripe.com/test/` |
 | Resend Dashboard | `https://resend.com` |
 
-## 10. Chiavi Stripe Configurate
+## 18. Chiavi Stripe Configurate
 
 | Variabile | Stato | Note |
 |-----------|-------|------|
@@ -238,15 +236,3 @@ Le seguenti chiavi vanno inserite in `.env.local` e nel dashboard Supabase/Strip
 | `RESEND_API_KEY` | ✅ Inserita | Email transazionali attive |
 | Git commit `dd53cdf` | ✅ Fatto | Polish + DESIGN.md + sidecar + lazy init + chiavi |
 
-## 11. Polish Completi (Impeccable)
-
-| Pagina | Modifiche |
-|--------|----------|
-| `app/globals.css` | Focus ring globale, riduzione movimento, font-family corretto |
-| `app/(pubblico)/page.tsx` | Hero spaziatura, card hover con translate, empty state, footer strutturato, transition-colors |
-| `app/login/page.tsx` | Placeholder input, autoComplete, ruolo alert, separatore accessibile, transition-colors |
-| `app/register/page.tsx` | Placeholder input, autoComplete, ruolo alert, success CTA button, transition-colors |
-| `app/concorsi/[slug]/page.tsx` | Breadcrumb nav semantico, info box con bordi, prezzo display, footer, transition-colors |
-| `app/corsi/[corsoId]/player/page.tsx` | Skeleton loading, empty state, progresso sidebar, useCallback, abort cleanup, prose typography |
-| `app/miei-corsi/page.tsx` | Skeleton loading, empty state con CTA, cleanup cancelled flag, transition-colors |
-| `app/admin/layout.tsx` | Active link detection con usePathname, transition-colors, icone stato attivo |
