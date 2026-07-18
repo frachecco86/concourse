@@ -144,16 +144,13 @@ export default function PlayerPage() {
       // Aggiorna i capitoli con il quiz associato (crea nuova copia)
       const capitoliConQuiz = capitoliConStato.map((c) => {
         if (quizPerCapitoli[c.id]) {
-          console.log('Quiz caricato per:', c.titolo, quizPerCapitoli[c.id]);
           return { ...c, quiz: quizPerCapitoli[c.id] };
         }
-        console.log('NESSUN QUIZ per:', c.titolo);
         return c;
       });
 
       if (cancelled) return;
       setCapitoli(capitoliConQuiz);
-      console.log('Capitoli finali:', capitoliConQuiz.map(c => ({ titolo: c.titolo, hasQuiz: !!c.quiz }));
       setLoading(false);
     }
     init();
@@ -417,25 +414,29 @@ export default function PlayerPage() {
         {/* Link ai quiz */}
         <div className="border-t p-4">
           <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">Quiz</h3>
-          <div className="space-y-2">
-            {capitoli.map((cap) => {
-              const quizData = cap.quiz;
-              if (!quizData) return null;
-              return (
-                <button
-                  key={cap.id}
-                  onClick={() => {
-                    selezionaCapitolo(cap);
-                    setTimeout(mostraQuiz, 300);
-                  }}
-                  className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs transition-colors hover:bg-zinc-50"
-                >
-                  <span className="text-zinc-600">Quiz: {cap.titolo}</span>
-                  <span className="text-zinc-400">{quizData.domande.length} domande</span>
-                </button>
-              );
-            })}
-          </div>
+          {capitoli.some((c) => (c as any).quiz) ? (
+            <div className="space-y-2">
+              {capitoli.map((cap) => {
+                const quizData = (cap as any).quiz;
+                if (!quizData) return null;
+                return (
+                  <button
+                    key={cap.id}
+                    onClick={() => {
+                      selezionaCapitolo(cap);
+                      setTimeout(mostraQuiz, 300);
+                    }}
+                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs transition-colors hover:bg-zinc-50"
+                  >
+                    <span className="text-zinc-600">Quiz: {cap.titolo}</span>
+                    <span className="text-zinc-400">{quizData.domande.length} domande</span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-xs text-zinc-400">Nessun quiz disponibile.</p>
+          )}
         </div>
       </aside>
 
