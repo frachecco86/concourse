@@ -144,13 +144,16 @@ export default function PlayerPage() {
       // Aggiorna i capitoli con il quiz associato (crea nuova copia)
       const capitoliConQuiz = capitoliConStato.map((c) => {
         if (quizPerCapitoli[c.id]) {
+          console.log('Quiz caricato per:', c.titolo, quizPerCapitoli[c.id]);
           return { ...c, quiz: quizPerCapitoli[c.id] };
         }
+        console.log('NESSUN QUIZ per:', c.titolo);
         return c;
       });
 
       if (cancelled) return;
       setCapitoli(capitoliConQuiz);
+      console.log('Capitoli finali:', capitoliConQuiz.map(c => ({ titolo: c.titolo, hasQuiz: !!c.quiz }));
       setLoading(false);
     }
     init();
