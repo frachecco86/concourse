@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import QuizPanel, { type QuizData } from "@/components/quiz-panel";
 
 interface Capitolo {
   id: string;
@@ -31,6 +32,8 @@ export default function PlayerPage() {
   const [slideIndex, setSlideIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const [quiz, setQuiz] = useState<QuizData | null>(null);
+  const [showQuiz, setShowQuiz] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -52,6 +55,7 @@ export default function PlayerPage() {
 
       if (!uid && !isFree) {
         // Corso a pagamento: richiede login
+        setLoading(false);
         return;
       }
 
@@ -123,6 +127,34 @@ export default function PlayerPage() {
     setSlide(slideData ?? []);
     setSlideIndex(0);
     setSlideCorrente(slideData?.[0] ?? null);
+    setShowQuiz(false);
+    setQuiz(null);
+
+    // Carica quiz per questo capitolo
+    const { data: quizData } = await supabase
+      .from("quiz")
+      .select("id, titolo")
+      .eq("capitolo_id", capitoloId)
+      .single();
+
+    if (quizData) {
+      const { data: domande } = await supabase
+        .from("domande")
+        .select("id, testo, tipo, opzioni, risposta_corretta, spiegazione")
+        .eq("quiz_id", quizData.id)
+        .order("id", { ascending: true });
+
+      if (domande && domande.length > 0) {
+        setQuiz({
+          id: quizData.id,
+          titolo: quizData.titolo,
+          domande: domande.map((d: any) => ({
+            ...d,
+            opzioni: typeof d.opzioni === "string" ? JSON.parse(d.opzioni) : d.opzioni,
+          })),
+        });
+      }
+    }
 
     // Solo utenti autenticati possono salvare progresso
     if (uid) {
@@ -167,6 +199,46 @@ export default function PlayerPage() {
     }
   }
 
+  async function handleQuizComplete(punteggio: number, risposte: Record<string, string>) {
+    if (!capitoloCorrente || !quiz || !userId) return;
+
+    // Salva risultato quiz
+    await supabase.from("risultati_quiz").upsert(
+      {
+        utente_id: userId,
+        quiz_id: quiz.id,
+        punteggio,
+        risposte,
+        data: new Date().toISOString(),
+      },
+      { onConflict: "utente_id" }
+    );
+
+    // Segna capitolo come completato
+    await supabase.from("progressi").upsert(
+      {
+        utente_id: userId,
+        capitolo_id: capitoloCorrente.id,
+        stato: "completato",
+        data_completamento: new Date().toISOString(),
+      },
+      { onConflict: "utente_id" }
+    );
+
+    setCapitoli((prev) =>
+      prev.map((c) =>
+        c.id === capitoloCorrente.id ? { ...c, stato: "completato" } : c
+      )
+    );
+
+    const prossimoIdx = capitoli.findIndex(
+      (c) => c.id === capitoloCorrente.id
+    ) + 1;
+    if (prossimoIdx < capitoli.length) {
+      setTimeout(() => selezionaCapitolo(capitoli[prossimoIdx]), 1500);
+    }
+  }
+
   function slidePrecedente() {
     if (slideIndex > 0) {
       setSlideIndex(slideIndex - 1);
@@ -179,6 +251,10 @@ export default function PlayerPage() {
       setSlideIndex(slideIndex + 1);
       setSlideCorrente(slide[slideIndex + 1]);
     }
+  }
+
+  function mostraQuiz() {
+    setShowQuiz(true);
   }
 
   /** Render markdown → HTML semplice */
@@ -347,12 +423,21 @@ export default function PlayerPage() {
 
               {slideIndex === slide.length - 1 && (
                 <div className="mt-8 text-center">
-                  <button
-                    onClick={completaCapitolo}
-                    className="rounded-lg bg-emerald-600 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-emerald-500"
-                  >
-                    Segna capitolo come completato
-                  </button>
+                  {quiz && !showQuiz ? (
+                    <button
+                      onClick={mostraQuiz}
+                      className="rounded-lg bg-zinc-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+                    >
+                      Vai al quiz del capitolo →
+                    </button>
+                  ) : (
+                    <button
+                      onClick={completaCapitolo}
+                      className="rounded-lg bg-emerald-600 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-emerald-500"
+                    >
+                      Segna capitolo come completato
+                    </button>
+                  )}
                 </div>
               )}
             </>
@@ -361,6 +446,15 @@ export default function PlayerPage() {
               <div className="mb-2 text-3xl">📖</div>
               <p className="text-zinc-400">Nessuna slide in questo capitolo.</p>
             </div>
+          )}
+
+          {/* Quiz del capitolo */}
+          {showQuiz && quiz && (
+            <QuizPanel
+              quiz={quiz}
+              capitoloId={capitoloCorrente?.id ?? ""}
+              onComplete={handleQuizComplete}
+            />
           )}
         </div>
       </main>

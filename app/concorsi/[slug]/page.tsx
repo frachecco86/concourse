@@ -59,6 +59,9 @@ export default async function ConcorsoDetailPage({
     Infinity,
   ) ?? null;
 
+  // Corsi gratuiti (prezzo = 0) — accessibili senza login
+  const corsiGratuiti = corsiConcorso?.filter(c => c.prezzo === 0) ?? [];
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
@@ -138,11 +141,19 @@ export default async function ConcorsoDetailPage({
                   {corsiConcorso.map((c: any) => (
                     <div key={c.id} className="flex items-center justify-between rounded-lg border border-zinc-100 bg-white p-4 transition-colors hover:border-zinc-200">
                       <span className="font-medium">{c.titolo}</span>
-                      <span className="text-sm font-semibold">
+                      <span className="flex items-center gap-3 text-sm font-semibold">
                         {c.prezzo && c.prezzo > 0
                           ? `€${c.prezzo.toFixed(2)}`
                           : c.prezzo === 0
-                            ? <span className="inline rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">Gratuito</span>
+                            ? <>
+                                <span className="inline rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">Gratuito</span>
+                                <Link
+                                  href={`/corsi/${c.id}/player`}
+                                  className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-500 transition-colors"
+                                >
+                                  Inizia
+                                </Link>
+                              </>
                             : <span className="text-zinc-400">Prezzo da definire</span>
                         }
                       </span>
@@ -168,7 +179,15 @@ export default async function ConcorsoDetailPage({
                     </>
                   )}
                 </div>
-                <CheckoutButton concorsoId={concorso.id} corsi={corsiConcorso ?? []} />
+                {prezzoMin === 0 && corsiGratuiti.length === 1
+                  ? <Link
+                      href={`/corsi/${corsiGratuiti[0].id}/player`}
+                      className="rounded-lg bg-white px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors"
+                    >
+                      Inizia gratis
+                    </Link>
+                  : <CheckoutButton concorsoId={concorso.id} corsi={corsiConcorso ?? []} />
+                }
               </div>
             )}
           </div>

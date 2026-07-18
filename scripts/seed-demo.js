@@ -77,7 +77,69 @@ async function main() {
   }
   console.log("✅ Corso creato:", corso.id);
 
-  // 4. Create capitoli
+  // 3b. Create free example course (prezzo = 0, no login required)
+  const { data: corsoGratis, error: cge } = await sb
+    .from("corsi")
+    .insert({
+      titolo: "Diritto Amministrativo — Esempio Gratuito",
+      descrizione:
+        "Versione gratuita del corso di diritto amministrativo. Stessi contenuti, accesso senza registrazione.",
+      materia_id: mat.id,
+      concorso_id: conc.id,
+      stato: "pubblicato",
+      prezzo: 0,
+    })
+    .select("id")
+    .single();
+  if (cge) {
+    console.error("Corso gratuito error:", cge);
+    return;
+  }
+  console.log("✅ Corso gratuito creato:", corsoGratis.id);
+
+  // 4. Create capitoli (for both paid and free corso — reuse same capitoli)
+  // Per il corso gratuito creiamo capitoli separati con stessi contenuti
+  const capitoliGratis = [];
+  for (const cap of capitoliData) {
+    const { data: c, error: ce2 } = await sb
+      .from("capitoli")
+      .insert({ corso_id: corsoGratis.id, ...cap })
+      .select("id")
+      .single();
+    if (ce2) {
+      console.error("Capitolo gratuito error:", ce2);
+      return;
+    }
+    capitoliGratis.push(c);
+    console.log("  Capitolo gratuito creato:", c.id, cap.titolo);
+  }
+
+  // Create slides for free course (same content as paid)
+  for (let i = 0; i < capitoliGratis.length; i++) {
+    const capId = capitoliGratis[i].id;
+    const slides = slideContent[i + 1] || [];
+    for (let j = 0; j < slides.length; j++) {
+      const { error: se } = await sb.from("slide").insert({
+        capitolo_id: capId,
+        ordine: j + 1,
+        contenuto: slides[j].contenuto,
+        tipo: slides[j].tipo,
+      });
+      if (se) {
+        console.error("Slide gratuito error:", se);
+        return;
+      }
+    }
+    console.log(
+      "  Slide create per capitolo gratuito",
+      i + 1,
+      ":",
+      slides.length,
+      "slide"
+    );
+  }
+
+  // 4. Create capitoli (for paid corso)
   const capitoliData = [
     { titolo: "Principi del Diritto Amministrativo", ordine: 1 },
     { titolo: "Atti Amministrativi", ordine: 2 },
@@ -214,12 +276,15 @@ async function main() {
     .from("concorsi_materie")
     .insert({ concorso_id: conc.id, materia_id: mat.id });
 
-  console.log("\n✅ Demo corso creato con successo!");
+  console.log("\n✅ Demo corsi creati con successo!");
   console.log(
     "\nConcorso: https://concourse-omega.vercel.app/concorsi/" + conc.slug
   );
   console.log(
-    "Corso: https://concourse-omega.vercel.app/corsi/" + corso.id + "/player"
+    "Corso (a pagamento): https://concourse-omega.vercel.app/corsi/" + corso.id + "/player"
+  );
+  console.log(
+    "Corso gratuito (senza login): https://concourse-omega.vercel.app/corsi/" + corsoGratis.id + "/player"
   );
 }
 

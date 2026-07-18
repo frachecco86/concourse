@@ -8,10 +8,14 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
+  const allCookies = request.cookies.getAll();
+  const cookieNames = allCookies.map(c => c.name);
+  console.log("[proxy] Cookies:", cookieNames.join(", "));
+
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
-        return request.cookies.getAll();
+        return allCookies;
       },
       setAll(cookies) {
         cookies.forEach(({ name, value, options }) => {
@@ -27,6 +31,8 @@ export async function proxy(request: NextRequest) {
 
   const url = request.nextUrl;
   const path = url.pathname;
+
+  console.log("[proxy] Path:", path, "User:", user?.email ?? "none");
 
   // Proteggi /admin routes — richiedono autenticazione + ruolo admin
   if (path.startsWith("/admin")) {
