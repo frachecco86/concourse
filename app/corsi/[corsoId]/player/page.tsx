@@ -142,9 +142,9 @@ export default function PlayerPage() {
       }
 
       // Aggiorna i capitoli con il quiz associato (crea nuova copia)
-      const capitoliConQuiz = capitoliConStato.map((c) => {
+      const capitoliConQuiz = JSON.parse(JSON.stringify(capitoliConStato)).map((c: any) => {
         if (quizPerCapitoli[c.id]) {
-          return { ...c, quiz: quizPerCapitoli[c.id] };
+          c.quiz = quizPerCapitoli[c.id];
         }
         return c;
       });
