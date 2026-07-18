@@ -11,6 +11,7 @@ interface Capitolo {
   titolo: string;
   ordine: number;
   stato: "non_iniziato" | "in_corso" | "completato";
+  quiz?: QuizData;
 }
 
 interface Slide {
@@ -111,7 +112,44 @@ export default function PlayerPage() {
         await caricaSlide(primoNonCompletato.id, uid);
       }
 
-      setLoading(false);
+      // Carica quiz per tutti i capitoli
+      const quizPerCapitoli: Record<string, QuizData> = {};
+      for (const cap of capitoliConStato) {
+        const { data: quizData } = await supabase
+          .from("quiz")
+          .select("id, titolo")
+          .eq("capitolo_id", cap.id)
+          .single();
+
+        if (quizData) {
+          const { data: domande } = await supabase
+            .from("domande")
+            .select("id, testo, tipo, opzioni, risposta_corretta, spiegazione")
+            .eq("quiz_id", quizData.id)
+            .order("id", { ascending: true });
+
+          if (domande && domande.length > 0) {
+            quizPerCapitoli[cap.id] = {
+              id: quizData.id,
+              titolo: quizData.titolo,
+              domande: domande.map((d: any) => ({
+                ...d,
+                opzioni: typeof d.opzioni === "string" ? JSON.parse(d.opzioni) : d.opzioni,
+              })),
+            };
+          }
+        }
+      }
+
+      // Aggiorna i capitoli con il quiz associato
+      capitoliConStato.forEach((c) => {
+        if (quizPerCapitoli[c.id]) {
+          (c as any).quiz = quizPerCapitoli[c.id];
+        }
+      });
+
+      if (cancelled) return;
+      setCapitoli(capitoliConStato);
     }
     init();
     return () => { cancelled = true; };
@@ -370,6 +408,30 @@ export default function PlayerPage() {
             ))
           )}
         </nav>
+
+        {/* Link ai quiz */}
+        <div className="border-t p-4">
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">Quiz</h3>
+          <div className="space-y-2">
+            {capitoli.map((cap) => {
+              const quizData = cap.quiz;
+              if (!quizData) return null;
+              return (
+                <button
+                  key={cap.id}
+                  onClick={() => {
+                    selezionaCapitolo(cap);
+                    setTimeout(mostraQuiz, 300);
+                  }}
+                  className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs transition-colors hover:bg-zinc-50"
+                >
+                  <span className="text-zinc-600">Quiz: {cap.titolo}</span>
+                  <span className="text-zinc-400">{quizData.domande.length} domande</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </aside>
 
       {/* Area contenuto */}
