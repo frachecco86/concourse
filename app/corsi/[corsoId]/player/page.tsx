@@ -149,10 +149,6 @@ export default function PlayerPage() {
         return c;
       });
 
-      console.log('DEBUG: quizPerCapitoli =', Object.keys(quizPerCapitoli));
-      console.log('DEBUG: capitoliConQuiz =', capitoliConQuiz.map((c: any) => c.titolo));
-      console.log('DEBUG: capitoliConQuiz has quiz =', capitoliConQuiz.map((c: any) => ({ titolo: c.titolo, hasQuiz: !!c.quiz })));
-
       if (cancelled) return;
       setCapitoli(capitoliConQuiz);
       setLoading(false);
