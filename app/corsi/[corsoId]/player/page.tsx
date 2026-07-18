@@ -141,15 +141,17 @@ export default function PlayerPage() {
         }
       }
 
-      // Aggiorna i capitoli con il quiz associato
-      capitoliConStato.forEach((c) => {
+      // Aggiorna i capitoli con il quiz associato (crea nuova copia)
+      const capitoliConQuiz = capitoliConStato.map((c) => {
         if (quizPerCapitoli[c.id]) {
-          (c as any).quiz = quizPerCapitoli[c.id];
+          return { ...c, quiz: quizPerCapitoli[c.id] };
         }
+        return c;
       });
 
       if (cancelled) return;
-      setCapitoli(capitoliConStato);
+      setCapitoli(capitoliConQuiz);
+      setLoading(false);
     }
     init();
     return () => { cancelled = true; };
